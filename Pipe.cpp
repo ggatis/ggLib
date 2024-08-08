@@ -13,11 +13,12 @@
 
 
 #include "Pipe.h"
-
+//#include <algorithm>
+//in ByteArray.h
 
 //Constructor implementation
 Pipe::Pipe( ByteArray* pInput_data, ByteArray* pOutput_data, ProcessorFunc processor )
-    : pInput_data( pInput_data ), pOutput_data( pOutput_data ), processor( processor ) {}
+    : _pInput_data( pInput_data ), _pOutput_data( pOutput_data ), _processor( processor ) {}
 
 //Process method implementation
 StatusCode Pipe::process() {
@@ -26,7 +27,7 @@ StatusCode Pipe::process() {
             //Clear the output buffer before processing
             //pOutput_data->clear();
             //Process the input data and store the result in the output data
-            return processor( pInput_data, pOutput_data );
+            return _processor( _pInput_data, _pOutput_data );
         } catch (...) {
             return StatusCode::ERROR;
         }
@@ -34,22 +35,32 @@ StatusCode Pipe::process() {
         //Clear the output buffer before processing
         //pOutput_data->clear();
         //Process the input data and store the result in the output data
-        return processor( pInput_data, pOutput_data );
+        return _processor( _pInput_data, _pOutput_data );
 #endif
     }
 
 //Get the input buffer
 ByteArray* Pipe::getInputBuffer( void ) const {
-    return pInput_data;
+    return _pInput_data;
 }
-
 
 //Get the output buffer
 ByteArray* Pipe::getOutputBuffer( void ) const {
-    return pOutput_data;
+    return _pOutput_data;
 }
 
-//Swap input and output buffers
-void Pipe::swapBuffers( void ) {
-    std::swap( pInput_data, pOutput_data );
+//Set the input buffer, even nullptr is allowed
+void setInputBuffer( ByteArray* pInput_data ) {
+    _pInput_data = pInput_data;
+}
+
+//Set the output buffer, even nullptr is allowed
+void setOutputBuffer( ByteArray* pOutput_data ) {
+    _pOutput_data = pOutput_data;
+}
+
+
+//Swap input and output buffers aka swapBuffers
+void Pipe::swapIO( void ) {
+    std::swap( _pInput_data, _pOutput_data );
 }

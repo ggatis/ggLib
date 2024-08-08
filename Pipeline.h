@@ -28,15 +28,21 @@ public:
 
     StatusCode AddProcessor( Pipe::ProcessorFunc processor, int outputBufferSize = -1 );
 
-    StatusCode Sink( uint8_t buffer, char c );
-    StatusCode Sink( uint8_t buffer, const char* cstring );
-    StatusCode Sink( uint8_t buffer, ByteArray* pByteArray );
+    ByteArray* getFrontEnd() const;                         //first pipe input
+    ByteArray* getBackEnd() const;                          //last pipe output
+    ByteArray* getBuffer( uint8_t index ) const;            //from _buffers
 
-    ByteArray* getInputBuffer() const;
-    ByteArray* getFrontEnd() const;
-    ByteArray* getOutputBuffer() const;
-    ByteArray* getBackEnd() const;
-    ByteArray* getBuffer( uint8_t index ) const;
+    ByteArray* getInputBuffer(  uint8_t PipeIndex ) const;   //input buffer of a pipe
+    ByteArray* getOutputBuffer( uint8_t PipeIndex ) const;
+
+    ByteArray* setInputBuffer(  uint8_t PipeIndex, uint8_t BufferIndex );
+    ByteArray* setOutputBuffer( uint8_t PipeIndex, uint8_t BufferIndex );
+    uint8_t    setInputBuffer(  uint8_t PipeIndex, ByteArray* pByteArray );
+    uint8_t    setOutputBuffer( uint8_t PipeIndex, ByteArray* pByteArray );
+
+    StatusCode Sink( uint8_t PipeIndex, char c );
+    StatusCode Sink( uint8_t PipeIndex, const char* cstring );
+    StatusCode Sink( uint8_t PipeIndex, ByteArray* pByteArray );
 
     StatusCode processStep( uint8_t i );
     StatusCode processAll( void );
@@ -45,20 +51,21 @@ public:
     uint8_t getBufferCount( void ) const;
     uint8_t getPipeCount( void ) const;
 
-    void swapBuffers( uint16_t x, uint16_t y );
-    void swapIO( void );
+    void swapBuffers( uint16_t x, uint16_t y );             //swap buffers in _buffers
+    void swapIO( void );                                    //swap F-end and B-end (_buffers)
+    void swapIO( uint8_t PipeIndex );                       //swap buffers of pipe
 
     void setErrorHandler( void (*ErrorHandler)( Pipeline* pPipeline, StatusCode ErrorCode ) );
 
 private:
 
-    uint8_t     _skip               = 0;
+    uint8_t     _pipeOffset         = 0;
     uint8_t     _faultyPipe         = 0;
     uint16_t    _defaultBufferSize  = 128;
     void      (*_ErrorHandler)( Pipeline* pPipeline, StatusCode ErrorCode ) = nullptr;
 
-    std::vector<ByteArray*> buffers;
-    std::vector<Pipe*> pipes;
+    std::vector<ByteArray*>         _buffers;
+    std::vector<Pipe*>              _pipes;
 };
 
 #endif // _PIPELINE_H_

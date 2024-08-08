@@ -27,7 +27,9 @@ enum class StatusCode {
     OK,
     PENDING,
     PARTIAL,
-    ERROR
+    ERROR,
+    REPEAT,
+    NEXT
 };
 
 
@@ -43,14 +45,16 @@ class Pipe {
 
         ByteArray* getInputBuffer() const;
         ByteArray* getOutputBuffer() const;
+        void       setInputBuffer( ByteArray* pInput_data );
+        void       setOutputBuffer( ByteArray* pOutput_data );
 
-        void swapBuffers();
+        void       swapIO( void ); //void swapBuffers();
 
     protected:
 
-        ByteArray*      pInput_data;
-        ByteArray*      pOutput_data;
-        ProcessorFunc   processor;
+        ByteArray*      _pInput_data;
+        ByteArray*      _pOutput_data;
+        ProcessorFunc   _processor;
 
 };
 
