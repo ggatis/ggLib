@@ -417,6 +417,10 @@ uint8_t Pipeline::getFaultyPipe() const {
     return _faultyPipe;
 }
 
+uint8_t Pipeline::getPipeOffset() const {
+    return _pipeOffset;
+}
+
 uint8_t Pipeline::getBufferCount() const {
     return _buffers.size();
 }

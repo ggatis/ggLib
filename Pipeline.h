@@ -58,6 +58,7 @@ public:
     StatusCode processAll( void );
 
     uint8_t getFaultyPipe( void ) const;
+    uint8_t getPipeOffset( void ) const;
     uint8_t getBufferCount( void ) const;
     uint8_t getPipeCount( void ) const;
 
@@ -69,8 +70,8 @@ public:
 
 private:
 
-    uint8_t     _pipeOffset         = 0;
     uint8_t     _faultyPipe         = 0;
+    uint8_t     _pipeOffset         = 0;
     uint16_t    _defaultBufferSize  = 128;
     void      (*_ErrorHandler)( Pipeline* pPipeline, StatusCode ErrorCode ) = nullptr;
 
