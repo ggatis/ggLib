@@ -49,7 +49,7 @@ Pipeline::~Pipeline() {
 //in order to avoid generation of the 0 size ByteArray
 
 //Add a buffer using the default size or the specified size
-uint8_t    AddBuffer( int BufferSize ) {
+uint8_t    Pipeline::AddBuffer( int BufferSize ) {
     
     _faultyPipe = 0;
 
@@ -73,7 +73,7 @@ uint8_t    AddBuffer( int BufferSize ) {
 
 }
 
-uint8_t    AddBuffer( ByteArray* pByteArray ) {
+uint8_t    Pipeline::AddBuffer( ByteArray* pByteArray ) {
     _faultyPipe = 0;
     _buffers.push_back( pByteArray );
     return _buffers.size() - 1;
@@ -113,7 +113,7 @@ StatusCode Pipeline::AddProcessor( Pipe::ProcessorFunc processor, int outputBuff
 
 }
 
-StatusCode AddProcessor(
+StatusCode Pipeline::AddProcessor(
     uint8_t inputBufferID, Pipe::ProcessorFunc processor, uint8_t outputBufferID ) {
 
     if ( inputBufferID  >= _buffers.size() ) {
@@ -138,7 +138,7 @@ StatusCode AddProcessor(
 
 }
 
-StatusCode AddProcessor(
+StatusCode Pipeline::AddProcessor(
     ByteArray* inputBuffer, Pipe::ProcessorFunc processor, ByteArray* outputBuffer ) {
 
     //Create a new Pipe with these buffers
@@ -442,7 +442,7 @@ void Pipeline::swapIO( void ) {
 }
 
 //Count pipes from 1
-void swapIO( uint8_t PipeIndex ) {
+void Pipeline::swapIO( uint8_t PipeIndex ) {
     if ( PipeIndex > 0 && PipeIndex <= _pipes.size() ) {
         _pipes[PipeIndex-1]->swapIO();
     }

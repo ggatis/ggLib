@@ -50,12 +50,12 @@ ByteArray* Pipe::getOutputBuffer( void ) const {
 }
 
 //Set the input buffer, even nullptr is allowed
-void setInputBuffer( ByteArray* pInput_data ) {
+void Pipe::setInputBuffer( ByteArray* pInput_data ) {
     _pInput_data = pInput_data;
 }
 
 //Set the output buffer, even nullptr is allowed
-void setOutputBuffer( ByteArray* pOutput_data ) {
+void Pipe::setOutputBuffer( ByteArray* pOutput_data ) {
     _pOutput_data = pOutput_data;
 }
 

@@ -40,7 +40,7 @@ class Pipe {
         using ProcessorFunc = StatusCode (*)( ByteArray*, ByteArray* );
 
         Pipe( 
-            ByteArray* pInput_data  = nullptr,
+            ByteArray* pInput_data,
             ProcessorFunc processor,
             ByteArray* pOutput_data = nullptr
         );
