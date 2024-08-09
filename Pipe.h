@@ -39,7 +39,11 @@ class Pipe {
 
         using ProcessorFunc = StatusCode (*)( ByteArray*, ByteArray* );
 
-        Pipe( ByteArray* pInput_data, ByteArray* pOutput_data, ProcessorFunc processor );
+        Pipe( 
+            ByteArray* pInput_data  = nullptr,
+            ProcessorFunc processor,
+            ByteArray* pOutput_data = nullptr
+        );
 
         StatusCode process();
 

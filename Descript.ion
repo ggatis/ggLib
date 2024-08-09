@@ -1,0 +1,1 @@
+Pipeline.cpp excapsulate the buffers from Pipes and keep buffer indeces in two vectors INPUT/OUTPUT

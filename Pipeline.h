@@ -5,7 +5,7 @@
  *
  * @note    This example code is free software: you can redistribute it and/or modify it.
  *
- *          This program is provided by EDI on an "AS IS" basis without
+ *          This program is provided on an "AS IS" basis without
  *          any warranties in the hope that it will be useful.
  * 
  * Gatis Gaigals, 2024
@@ -26,7 +26,17 @@ public:
     Pipeline( ByteArray* pBAin );
     ~Pipeline();
 
-    StatusCode AddProcessor( Pipe::ProcessorFunc processor, int outputBufferSize = -1 );
+    uint8_t    AddBuffer( int        BufferSize = -1 ); //every buffer can be added only once
+    uint8_t    AddBuffer( ByteArray* pByteArray );      //they will get unique uint8_t ID
+
+    StatusCode AddProcessor(    Pipe::ProcessorFunc processor,
+                                int                 outputBufferSize = -1 );
+    StatusCode AddProcessor(    uint8_t             inputBufferID,
+                                Pipe::ProcessorFunc processor,
+                                uint8_t             outputBufferID );
+    StatusCode AddProcessor(    ByteArray*          inputBuffer,
+                                Pipe::ProcessorFunc processor,
+                                ByteArray*          outputBuffer );
 
     ByteArray* getFrontEnd() const;                         //first pipe input
     ByteArray* getBackEnd() const;                          //last pipe output

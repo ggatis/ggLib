@@ -41,29 +41,68 @@ Pipeline::~Pipeline() {
     }
 }
 
-//Add a processor to the pipeline
-StatusCode Pipeline::AddProcessor( Pipe::ProcessorFunc processor, int outputBufferSize ) {
-    //Check input buffer - if it is reason to continue
-    ByteArray* inputBuffer  = _buffers.back();
-    //if ( ( nullptr == inputBuffer ) || ( nullptr == inputBuffer->data() ) ) {
-    if ( !inputBuffer || !inputBuffer->data() ) {
-        return StatusCode::ERROR;
+/* Add bufers */
+
+//every buffer will get unique uint8_t ID
+//they are not checked on uniquity
+//the 0 size buffer is ok but better use nullptr buffers
+//in order to avoid generation of the 0 size ByteArray
+
+//Add a buffer using the default size or the specified size
+uint8_t    AddBuffer( int BufferSize ) {
+    
+    _faultyPipe = 0;
+
+    uint16_t outputBufferSize = ( BufferSize < 0 ) ? _defaultBufferSize : (uint16_t)BufferSize;
+
+    ByteArray* outputBuffer;
+    if ( outputBufferSize ) {
+        outputBuffer = new ByteArray( outputBufferSize );
+        if ( !outputBuffer || !outputBuffer->data() ) {
+            //if AddBuffer returns 0, check _faultyPipe: if it returns _pipes.size() + 1,
+            //there was an error
+            _faultyPipe = _pipes.size() + 1;
+            return 0;
+        }
+    } else {
+        outputBuffer = nullptr;
     }
 
-    //Create new buffer
-    ByteArray* outputBuffer = new ByteArray( ( outputBufferSize < 1 ) ? _defaultBufferSize : outputBufferSize );
-
-    //if ( ( nullptr == outputBuffer ) || ( nullptr == outputBuffer->data() ) ) {
-    if ( !outputBuffer || !outputBuffer->data() ) {
-        return StatusCode::ERROR;
-    }
-
-    //Add the output buffer to the _buffers list
     _buffers.push_back( outputBuffer );
+    return _buffers.size() - 1;
+
+}
+
+uint8_t    AddBuffer( ByteArray* pByteArray ) {
+    _faultyPipe = 0;
+    _buffers.push_back( pByteArray );
+    return _buffers.size() - 1;
+}
+
+
+/* Add processors */
+
+//Add a processor to the pipeline specifying only the output buffer size
+StatusCode Pipeline::AddProcessor( Pipe::ProcessorFunc processor, int outputBufferSize ) {
+
+    //generate nullptr input buffer on demand
+    if ( !_buffers.size() ) {
+        _buffers.push_back( nullptr );
+    }
+
+    //input buffer can be nullptr
+    ByteArray* inputBuffer  = _buffers.back();
+
+    uint8_t    outputBufferIndex = AddBuffer( outputBufferSize );
+    if ( !outputBufferIndex && _faultyPipe == ( _pipes.size() + 1 ) ) {
+        return StatusCode::ERROR;
+    }
+    
+    //Get the buffer
+    ByteArray* outputBuffer = _buffers[outputBufferIndex];
 
     //Create a new Pipe with these buffers
-    Pipe* newPipe           = new Pipe( inputBuffer, outputBuffer, processor );
-    //if ( nullptr == newPipe ) {
+    Pipe* newPipe           = new Pipe( inputBuffer, processor, outputBuffer );
     if ( !newPipe ) {
         return StatusCode::ERROR;
     }
@@ -71,7 +110,49 @@ StatusCode Pipeline::AddProcessor( Pipe::ProcessorFunc processor, int outputBuff
     _pipes.push_back( newPipe );
 
     return StatusCode::OK;
+
 }
+
+StatusCode AddProcessor(
+    uint8_t inputBufferID, Pipe::ProcessorFunc processor, uint8_t outputBufferID ) {
+
+    if ( inputBufferID  >= _buffers.size() ) {
+        return StatusCode::ERROR;
+    }
+    if ( outputBufferID >= _buffers.size() ) {
+        return StatusCode::ERROR;
+    }
+
+    ByteArray* inputBuffer  = _buffers[inputBufferID];
+    ByteArray* outputBuffer = _buffers[outputBufferID];
+
+    //Create a new Pipe with these buffers
+    Pipe* newPipe           = new Pipe( inputBuffer, processor, outputBuffer );
+    if ( !newPipe ) {
+        return StatusCode::ERROR;
+    }
+
+    _pipes.push_back( newPipe );
+
+    return StatusCode::OK;
+
+}
+
+StatusCode AddProcessor(
+    ByteArray* inputBuffer, Pipe::ProcessorFunc processor, ByteArray* outputBuffer ) {
+
+    //Create a new Pipe with these buffers
+    Pipe* newPipe           = new Pipe( inputBuffer, processor, outputBuffer );
+    if ( !newPipe ) {
+        return StatusCode::ERROR;
+    }
+
+    _pipes.push_back( newPipe );
+
+    return StatusCode::OK;
+
+}
+
 
 /* Getters for _buffers */
 

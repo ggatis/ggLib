@@ -17,8 +17,8 @@
 //in ByteArray.h
 
 //Constructor implementation
-Pipe::Pipe( ByteArray* pInput_data, ByteArray* pOutput_data, ProcessorFunc processor )
-    : _pInput_data( pInput_data ), _pOutput_data( pOutput_data ), _processor( processor ) {}
+Pipe::Pipe( ByteArray* pInput_data, ProcessorFunc processor, ByteArray* pOutput_data )
+    : _pInput_data( pInput_data ), _processor( processor ), _pOutput_data( pOutput_data ) {}
 
 //Process method implementation
 StatusCode Pipe::process() {
