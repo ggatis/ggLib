@@ -19,12 +19,24 @@
 #include <vector>
 
 
+struct InitRecord {
+    ByteArray*          inputBuffer;
+    Pipe::ProcessorFunc processor;
+    ByteArray*          outputBuffer;
+};
+
+#define SIZE_OF_INITRECORD sizeof( InitRecord )
+
+
 class Pipeline {
 
 public:
     Pipeline( uint16_t buffersize = 128 );
     Pipeline( ByteArray* pBAin );
+
     ~Pipeline();
+
+    StatusCode Setup( const InitRecord* anInitArray, uint8_t sizeOfInitArray );
 
     uint8_t    AddBuffer( int        BufferSize = -1 ); //every buffer can be added only once
     uint8_t    AddBuffer( ByteArray* pByteArray );      //they will get unique uint8_t ID

@@ -33,6 +33,7 @@ Pipeline::Pipeline( ByteArray* pBAin ) :
     _buffers.push_back( pBAin );
 }
 
+
 //Destructor to clean up dynamically allocated objects
 Pipeline::~Pipeline() {
     for ( auto buffer : _buffers ) {
@@ -43,6 +44,32 @@ Pipeline::~Pipeline() {
         delete pipe;
     }
 }
+
+
+/* Upload provided InitArray */
+
+StatusCode Pipeline::Setup(
+    const InitRecord* anInitArray, uint8_t sizeOfInitArray ) {
+
+    StatusCode status;
+
+    _faultyPipe = 0;
+
+    for ( uint8_t i = 0; i < sizeOfInitArray; ++i ) {
+        status = AddProcessor( 
+            anInitArray[i].inputBuffer,
+            anInitArray[i].processor,
+            anInitArray[i].outputBuffer );
+        if ( StatusCode::OK != status ) {
+            _faultyPipe = i + 1;
+            return status;
+        }
+    }
+
+    return StatusCode::OK;
+
+}
+
 
 /* Add bufers */
 
@@ -263,7 +290,7 @@ ByteArray* Pipeline::setOutputBuffer( uint8_t PipeIndex, uint8_t BufferIndex ) {
 ByteArray* Pipeline::setInputBuffer( uint8_t PipeIndex, ByteArray* pByteArray ) {
     if ( PipeIndex > 0 && PipeIndex <= _pipes.size() ) {
         _pipes[PipeIndex-1]->setInputBuffer( pByteArray );
-        return _pipes[PipeIndex-1]->getInputBuffer( pByteArray );
+        return _pipes[PipeIndex-1]->getInputBuffer();
     }
     return nullptr;
 }
@@ -271,7 +298,7 @@ ByteArray* Pipeline::setInputBuffer( uint8_t PipeIndex, ByteArray* pByteArray ) 
 ByteArray* Pipeline::setOutputBuffer( uint8_t PipeIndex, ByteArray* pByteArray ) {
     if ( 0 < PipeIndex && PipeIndex <= _pipes.size() ) {
         _pipes[PipeIndex-1]->setOutputBuffer( pByteArray );
-        return _pipes[PipeIndex-1]->getOutputBuffer( pByteArray );
+        return _pipes[PipeIndex-1]->getOutputBuffer();
     }
     return nullptr;
 }
