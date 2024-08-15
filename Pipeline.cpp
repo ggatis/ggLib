@@ -16,11 +16,14 @@
 
 
 //Constructor with default buffer size
+//if the size is given 0, no buffers are created
 Pipeline::Pipeline( uint16_t buffersize ) :
     _defaultBufferSize( buffersize ) {
     //create the first buffer
-    ByteArray* initialBuffer = new ByteArray( _defaultBufferSize );
-    _buffers.push_back( initialBuffer );
+    if ( _defaultBufferSize ) {
+        ByteArray* initialBuffer = new ByteArray( _defaultBufferSize );
+        _buffers.push_back( initialBuffer );
+    }
 }
 
 //Constructor with a provided ByteArray input buffer
@@ -43,6 +46,8 @@ Pipeline::~Pipeline() {
 
 /* Add bufers */
 
+//buffers are saved in _buffers only if they are added by AddBuffer
+//if _defaultBufferSize == 0, then nullptr are added or later initialisation
 //every buffer will get unique uint8_t ID
 //they are not checked on uniquity
 //the 0 size buffer is ok but better use nullptr buffers
@@ -83,26 +88,34 @@ uint8_t    Pipeline::AddBuffer( ByteArray* pByteArray ) {
 /* Add processors */
 
 //Add a processor to the pipeline specifying only the output buffer size
-StatusCode Pipeline::AddProcessor( Pipe::ProcessorFunc processor, int outputBufferSize ) {
+StatusCode Pipeline::AddProcessor( Pipe::ProcessorFunc processor, uint16_t outputBufferSize ) {
+
+    ByteArray* inputBuffer;
+    ByteArray* outputBuffer;
 
     //generate nullptr input buffer on demand
-    if ( !_buffers.size() ) {
-        _buffers.push_back( nullptr );
+    //do not add it to the _buffers since it will be visible in _pipes
+    if ( _pipes.size() ) {
+        //let's take the last output bufer as input
+        _pipes[_pipes.size()-1]->getOutputBuffer();
+    } else {
+        //do not handle _buffers:
+        //user is responsible for bufer assignement from _buffers
+        //buffers can be nullptr
+        inputBuffer     = nullptr;
     }
 
-    //input buffer can be nullptr
-    ByteArray* inputBuffer  = _buffers.back();
-
-    uint8_t    outputBufferIndex = AddBuffer( outputBufferSize );
-    if ( !outputBufferIndex && _faultyPipe == ( _pipes.size() + 1 ) ) {
-        return StatusCode::ERROR;
+    if ( outputBufferSize ) {
+        outputBuffer    = new ByteArray( outputBufferSize );
+        if ( nullptr == outputBuffer ) {
+            return StatusCode::ERROR;
+        }
+    } else {
+        outputBuffer    = nullptr;
     }
-    
-    //Get the buffer
-    ByteArray* outputBuffer = _buffers[outputBufferIndex];
 
     //Create a new Pipe with these buffers
-    Pipe* newPipe           = new Pipe( inputBuffer, processor, outputBuffer );
+    Pipe* newPipe       = new Pipe( inputBuffer, processor, outputBuffer );
     if ( !newPipe ) {
         return StatusCode::ERROR;
     }
@@ -139,6 +152,36 @@ StatusCode Pipeline::AddProcessor(
 }
 
 StatusCode Pipeline::AddProcessor(
+    Pipe::ProcessorFunc processor, ByteArray* outputBuffer ) {
+
+    //Create a new Pipe with these buffers
+    Pipe* newPipe           = new Pipe( nullptr, processor, outputBuffer );
+    if ( !newPipe ) {
+        return StatusCode::ERROR;
+    }
+
+    _pipes.push_back( newPipe );
+
+    return StatusCode::OK;
+
+}
+
+StatusCode Pipeline::AddProcessor(
+    ByteArray* inputBuffer, Pipe::ProcessorFunc processor ) {
+
+    //Create a new Pipe with these buffers
+    Pipe* newPipe           = new Pipe( inputBuffer, processor, nullptr );
+    if ( !newPipe ) {
+        return StatusCode::ERROR;
+    }
+
+    _pipes.push_back( newPipe );
+
+    return StatusCode::OK;
+
+}
+
+StatusCode Pipeline::AddProcessor(
     ByteArray* inputBuffer, Pipe::ProcessorFunc processor, ByteArray* outputBuffer ) {
 
     //Create a new Pipe with these buffers
@@ -158,12 +201,18 @@ StatusCode Pipeline::AddProcessor(
 
 ByteArray* Pipeline::getFrontEnd() const {
     //Return the first buffer, which can be the input buffer
-    return _buffers.front();
+    if ( _pipes.size() ) {
+        return _pipes[0]->getInputBuffer();
+    }
+    return nullptr;
 }
 
 ByteArray* Pipeline::getBackEnd() const {
     //Return the last buffer, which can be the output buffer
-    return _buffers.back();
+    if ( _pipes.size() ) {
+        return _pipes[_pipes.size()-1]->getOutputBuffer();
+    }
+    return nullptr;
 }
 
 ByteArray* Pipeline::getBuffer( uint8_t index ) const {
@@ -211,35 +260,22 @@ ByteArray* Pipeline::setOutputBuffer( uint8_t PipeIndex, uint8_t BufferIndex ) {
     return nullptr;
 }
 
-uint8_t    Pipeline::setInputBuffer( uint8_t PipeIndex, ByteArray* pByteArray ) {
+ByteArray* Pipeline::setInputBuffer( uint8_t PipeIndex, ByteArray* pByteArray ) {
     if ( PipeIndex > 0 && PipeIndex <= _pipes.size() ) {
         _pipes[PipeIndex-1]->setInputBuffer( pByteArray );
+        return _pipes[PipeIndex-1]->getInputBuffer( pByteArray );
     }
-    
-    for ( uint16_t i = 0; i < _buffers.size(); ++i ) {
-        if ( _buffers[i] == pByteArray ) {
-            return i;
-        }
-    }
-    
-    _buffers.push_back( pByteArray );
-    return _buffers.size() - 1;
+    return nullptr;
 }
 
-uint8_t    Pipeline::setOutputBuffer( uint8_t PipeIndex, ByteArray* pByteArray ) {
-    if ( PipeIndex > 0 && PipeIndex <= _pipes.size() ) {
+ByteArray* Pipeline::setOutputBuffer( uint8_t PipeIndex, ByteArray* pByteArray ) {
+    if ( 0 < PipeIndex && PipeIndex <= _pipes.size() ) {
         _pipes[PipeIndex-1]->setOutputBuffer( pByteArray );
+        return _pipes[PipeIndex-1]->getOutputBuffer( pByteArray );
     }
-    
-    for ( uint16_t i = 0; i < _buffers.size(); ++i ) {
-        if ( _buffers[i] == pByteArray ) {
-            return i;
-        }
-    }
-    
-    _buffers.push_back( pByteArray );
-    return _buffers.size() - 1;
+    return nullptr;
 }
+
 
 /* Sink data in the Pipes */
 
@@ -430,14 +466,6 @@ uint8_t Pipeline::getPipeCount() const {
 }
 
 
-//Takes two buffer indices x and y as arguments.
-//Swaps the buffers at positions x and y if both indices are within the bounds of the _buffers vector.
-void Pipeline::swapBuffers( uint16_t x, uint16_t y ) {
-    if ( x < _buffers.size() && y < _buffers.size() ) {
-        std::swap( _buffers[x], _buffers[y] );
-    }
-}
-
 //Swaps the first and last buffers in the _buffers vector if there are at least two buffers.
 void Pipeline::swapIO( void ) {
     if ( _buffers.size() >= 2 ) {
@@ -452,6 +480,13 @@ void Pipeline::swapIO( uint8_t PipeIndex ) {
     }
 }
 
+//Takes two buffer indices x and y as arguments.
+//Swaps the buffers at positions x and y if both indices are within the bounds of the _buffers vector.
+void Pipeline::swapBuffers( uint16_t x, uint16_t y ) {
+    if ( x < _buffers.size() && y < _buffers.size() ) {
+        std::swap( _buffers[x], _buffers[y] );
+    }
+}
 
 //Set the error handler
 void Pipeline::setErrorHandler( void (*ErrorHandler)( Pipeline* pPipeline, StatusCode ErrorCode ) ) {

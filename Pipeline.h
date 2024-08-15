@@ -30,10 +30,14 @@ public:
     uint8_t    AddBuffer( ByteArray* pByteArray );      //they will get unique uint8_t ID
 
     StatusCode AddProcessor(    Pipe::ProcessorFunc processor,
-                                int                 outputBufferSize = -1 );
+                                uint16_t            outputBufferSize = 0 );
     StatusCode AddProcessor(    uint8_t             inputBufferID,
                                 Pipe::ProcessorFunc processor,
                                 uint8_t             outputBufferID );
+    StatusCode AddProcessor(    Pipe::ProcessorFunc processor,
+                                ByteArray*          outputBuffer );
+    StatusCode AddProcessor(    ByteArray*          inputBuffer,
+                                Pipe::ProcessorFunc processor );
     StatusCode AddProcessor(    ByteArray*          inputBuffer,
                                 Pipe::ProcessorFunc processor,
                                 ByteArray*          outputBuffer );
@@ -47,8 +51,8 @@ public:
 
     ByteArray* setInputBuffer(  uint8_t PipeIndex, uint8_t BufferIndex );
     ByteArray* setOutputBuffer( uint8_t PipeIndex, uint8_t BufferIndex );
-    uint8_t    setInputBuffer(  uint8_t PipeIndex, ByteArray* pByteArray );
-    uint8_t    setOutputBuffer( uint8_t PipeIndex, ByteArray* pByteArray );
+    ByteArray* setInputBuffer(  uint8_t PipeIndex, ByteArray* pByteArray );
+    ByteArray* setOutputBuffer( uint8_t PipeIndex, ByteArray* pByteArray );
 
     StatusCode Sink( uint8_t PipeIndex, char c );
     StatusCode Sink( uint8_t PipeIndex, const char* cstring );
@@ -62,9 +66,9 @@ public:
     uint8_t getBufferCount( void ) const;
     uint8_t getPipeCount( void ) const;
 
-    void swapBuffers( uint16_t x, uint16_t y );             //swap buffers in _buffers
     void swapIO( void );                                    //swap F-end and B-end (_buffers)
     void swapIO( uint8_t PipeIndex );                       //swap buffers of pipe
+    void swapBuffers( uint16_t x, uint16_t y );             //swap buffers in _buffers
 
     void setErrorHandler( void (*ErrorHandler)( Pipeline* pPipeline, StatusCode ErrorCode ) );
 
