@@ -307,7 +307,7 @@ CircularBuffer::put( uint8_t abyte ) {
  *
  * @param   byte  byte to put in buffer
  *
- * @return  byte count in buffer
+ * @return  CircularBuffer
  */
 CircularBuffer
 CircularBuffer::append( uint8_t abyte ) {
@@ -322,9 +322,36 @@ CircularBuffer::append( uint8_t abyte ) {
          * @param   repeats byte repeats
          *          byte    byte to append
          *
-         * @return  byte count in array
+         * @return  CircularBuffer
          */
 //        CircularBuffer  append( int repeats, uint8_t abyte );
+
+
+/**
+ * @brief   incoming CircularBuffer with added cstring
+ *
+ * @param   cstring  cstring to put in buffer
+ *
+ * @return  CircularBuffer
+ */
+CircularBuffer
+CircularBuffer::append( const char* cstring ) {
+
+    //Append each character of the C-string to the buffer
+    uint16_t offset = 0;
+    uint16_t OffsetLimit = size() - count();
+    char ch;
+    while ( '\0' != ( ch = *( cstring + offset++ ) ) ) {
+        if ( offset > OffsetLimit ) {
+            break;
+        }
+        add( (uint8_t)ch );
+    }
+
+    return *this;
+
+}
+
 
         /**
          * @brief   returns mid

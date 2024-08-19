@@ -241,24 +241,11 @@ class CircularBuffer : public ByteArray {
          */
         CircularBuffer  put( uint8_t abyte );
 
-        /**
-         * @brief   incoming CircularBuffer with added abyte
-         *
-         * @param   byte  byte to put in buffer
-         *
-         * @return  byte count in buffer
-         */
-        CircularBuffer  append( uint8_t abyte );
 
-        /**
-         * @brief   incoming CircularBuffer with added abyte x repeats
-         *
-         * @param   repeats byte repeats
-         *          byte    byte to append
-         *
-         * @return  byte count in array
-         */
+        CircularBuffer  append( uint8_t abyte );
 //        CircularBuffer  append( int repeats, uint8_t abyte );
+        CircularBuffer  append( const char* cstring );
+
 
         /**
          * @brief   returns mid

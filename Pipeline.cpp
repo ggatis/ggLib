@@ -306,6 +306,7 @@ ByteArray* Pipeline::setOutputBuffer( uint8_t PipeIndex, ByteArray* pByteArray )
 
 /* Sink data in the Pipes */
 
+//works with ByteArray buffers
 StatusCode Pipeline::Sink( uint8_t PipeIndex, char c ) {
 
     if ( PipeIndex > 0 && PipeIndex <= _pipes.size() ) {
@@ -334,6 +335,8 @@ StatusCode Pipeline::Sink( uint8_t PipeIndex, char c ) {
 
 }
 
+
+//works with ByteArray buffers
 StatusCode Pipeline::Sink( uint8_t PipeIndex, const char* cstring ) {
 
     if ( PipeIndex > 0 && PipeIndex <= _pipes.size() ) {
@@ -370,6 +373,7 @@ StatusCode Pipeline::Sink( uint8_t PipeIndex, const char* cstring ) {
 
 }
 
+//works with ByteArray buffers
 StatusCode Pipeline::Sink( uint8_t PipeIndex, ByteArray* pByteArray ) {
 
     if ( PipeIndex > 0 && PipeIndex <= _pipes.size() ) {
