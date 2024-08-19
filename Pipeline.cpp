@@ -430,17 +430,40 @@ StatusCode Pipeline::processStep( uint8_t i ) {
     return StatusCode::ERROR;       //no such a pipe
 }
 
+#define DebugSteps 0                //for Pipeline states debug
+#define DebugFrom  3
+
 StatusCode Pipeline::processAll() {
     StatusCode  status;
     //take into account _pipeOffset and reset it
-    uint8_t i   = _pipeOffset;
-    _pipeOffset       = 0;
+#if 0 < DebugSteps
+    if ( ( DebugFrom - 1 ) <= _pipeOffset ) {
+        printf("Pipeline._pipeOffset: %d", _pipeOffset );
+        if ( _pipeOffset < _pipes.size() ) {
+            printf(" <= ");
+        } else {
+            printf(" ? ");
+        }
+        printf("%d\r\n", _pipes.size() );
+    }
+#endif
+    uint8_t i           = _pipeOffset;
+    _pipeOffset         = 0;
     //Reset the faulty pipe indicator
-    _faultyPipe = 0;
-    for ( ; i < _pipes.size(); ++i ) {
-        //printf("Processing pipe %d\r\n", i + 1 );
+    _faultyPipe         = 0;
+    uint8_t terminate   = 0;
+    for ( ; ( i < _pipes.size() ) && !terminate ; ++i ) {
+#if 1 < DebugSteps
+        if ( ( DebugFrom - 1 ) <= i ) {
+            printf("Processing pipe %d\r\n", i + 1 );
+        }
+#endif
         status = _pipes[i]->process();
-        //printf("Pipe result: %d\r\n", status );
+#if 2 < DebugSteps
+        if ( ( DebugFrom - 1 ) <= i ) {
+            printf("Pipe result: %d\r\n", status );
+        }
+#endif
         switch ( status ) {
         case StatusCode::OK:
             break;
@@ -452,15 +475,21 @@ StatusCode Pipeline::processAll() {
             if ( _ErrorHandler ) {
                 _ErrorHandler( this, status );
             }
-            return status;
+            terminate = 1;
+            //return status;
+            break;
 
         case StatusCode::REPEAT:    //finish time quant, repeat later again
             _pipeOffset = i;        //first pipe offset
-            return status;
+            terminate = 1;
+            //return status;
+            break;
 
         case StatusCode::NEXT:      //finish time quant, continue later with next
             _pipeOffset = i + 1;    //first pipe offset
-            return status;
+            terminate = 1;
+            //return status;
+            break;
     
         default:
             // Handle unexpected status
@@ -468,7 +497,8 @@ StatusCode Pipeline::processAll() {
             if ( _ErrorHandler ) {
                 _ErrorHandler( this, status );
             }
-            return status;
+            terminate = 1;
+            //return status;
         }
     }
     return status;
