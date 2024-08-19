@@ -451,8 +451,9 @@ StatusCode Pipeline::processAll() {
     _pipeOffset         = 0;
     //Reset the faulty pipe indicator
     _faultyPipe         = 0;
-    uint8_t terminate   = 0;
-    for ( ; ( i < _pipes.size() ) && !terminate ; ++i ) {
+    //uint8_t terminate   = 0;
+    //for ( ; ( i < _pipes.size() ) && !terminate ; ++i ) {
+    for ( ; i < _pipes.size(); ++i ) {
 #if 1 < DebugSteps
         if ( ( DebugFrom - 1 ) <= i ) {
             printf("Processing pipe %d\r\n", i + 1 );
@@ -475,21 +476,21 @@ StatusCode Pipeline::processAll() {
             if ( _ErrorHandler ) {
                 _ErrorHandler( this, status );
             }
-            terminate = 1;
-            //return status;
-            break;
+            //terminate = 1;
+            return status;
+            //break;
 
         case StatusCode::REPEAT:    //finish time quant, repeat later again
             _pipeOffset = i;        //first pipe offset
-            terminate = 1;
-            //return status;
-            break;
+            //terminate = 1;
+            return status;
+            //break;
 
         case StatusCode::NEXT:      //finish time quant, continue later with next
             _pipeOffset = i + 1;    //first pipe offset
-            terminate = 1;
-            //return status;
-            break;
+            //terminate = 1;
+            return status;
+            //break;
     
         default:
             // Handle unexpected status
@@ -497,8 +498,8 @@ StatusCode Pipeline::processAll() {
             if ( _ErrorHandler ) {
                 _ErrorHandler( this, status );
             }
-            terminate = 1;
-            //return status;
+            //terminate = 1;
+            return status;
         }
     }
     return status;
