@@ -27,260 +27,50 @@
 class CircularBuffer : public ByteArray {
     public:
 
-        /**
-          * @brief  class constructor, not initialised buffer
-          *
-          * @param  size  buffer size
-          */
-                    CircularBuffer( uint16_t size );
+                        CircularBuffer( uint16_t size );
+//                      CircularBuffer( uint16_t repeats, char c );
+//                      CircularBuffer( uint16_t size, uint8_t* dataptr );
+//                      CircularBuffer( uint16_t size, uint16_t filled, uint8_t* dataptr );
+//                      CircularBuffer( const std::string& aString );
+//                      CircularBuffer( std::string&& aString );
+//                      CircularBuffer( const CircularBuffer& other );
+//                      CircularBuffer( CircularBuffer&& other ) noexcept;
 
-        /**
-          * @brief  class constructor, size, pointe to buffer
-          *
-          * @param  size  buffer size, it all contains data
-          *         dataptr  pointer to buffer
-          */
-//                    CircularBuffer( uint16_t size, uint8_t* dataptr );
+//                     ~CircularBuffer( void );       //no need
 
-        /**
-          * @brief  class constructor, all parameters
-          *
-          * @param  size  buffer size, it all contains data
-          *         filled  useful data bytes count
-          *         dataptr  pointer to buffer
-          */
-//                    CircularBuffer( uint16_t size, uint16_t filled, uint8_t* dataptr );
+//      CircularBuffer& operator = ( const CircularBuffer& other );
+//      CircularBuffer& operator = ( CircularBuffer&& other ) noexcept;
 
-        /**
-          * @brief  class constructor, initialised repeating a char
-          *
-          * @param  repeats  character repeat count
-          *         c        character
-          */
-//                    CircularBuffer( uint16_t repeats, char c );
+        void            clear(  void );
 
-        /**
-          * @brief  class constructor from string
-          *
-          * @param  aString
-         */
-//                    CircularBuffer( const std::string& aString );
+//      void            extendo( void );
+//      uint16_t        update_count( uint16_t newcount );
 
-        /**
-          * @brief  class constructor from rvalue string
-          *
-          * @param  aString
-         */
-//                    CircularBuffer( std::string&& aString );
+        bool            isEmpty( void ) const;
+        bool            isFull( void ) const;
 
-        /**
-          * @brief  class copy constructor, initialised using const CircularBuffer,
-          *
-          * @param  aCircularBuffer   input CircularBuffer
-          */
-//                    CircularBuffer( const CircularBuffer& other );
-
-        /**
-          * @brief  move constructor
-          *
-          * @param  CircularBuffer& aCircularBuffer
-          */
-//                    CircularBuffer( CircularBuffer&& other ) noexcept;
-
-        /**
-          * @brief  class destructor
-          *
-          * @param  -
-          */
-//                   ~CircularBuffer( void );
-
-        /**
-          * @brief  copy assignment operator
-          *
-          * @param  const CircularBuffer& aCircularBuffer
-          */
-//        CircularBuffer& operator = ( const CircularBuffer& other );
-
-        /**
-          * @brief  move assignment operator
-          *
-          * @param  CircularBuffer& aCircularBuffer
-          */
-//        CircularBuffer& operator = ( CircularBuffer&& other ) noexcept;
-
-        /**
-         * @brief   returns data buffer
-         *
-         * @param   -
-         *
-         * @return  CircularBuffer data buffer
-         */
-//        uint8_t*    data( void ) const;
-
-        /**
-         * @brief   returns size of data in array
-         *
-         * @param   -
-         *
-         * @return  CircularBuffer data size
-         */
-//        uint16_t    count( void ) const;
-
-        /**
-         * @brief   returns size of array
-         *
-         * @param   -
-         *
-         * @return  CircularBuffer array size
-         */
-//        uint16_t    size( void ) const;
-
-        /**
-         * @brief   clears the contents of the byte array and makes it null
-         *
-         * @param   -
-         *
-         * @return  -
-         */
-        void        clear( void );
-
-        /**
-         * @brief   extends the content to the _size
-         *
-         * @param   -
-         *
-         * @return  -
-         */
-//        void        extendo( void );
-
-        /**
-         * @brief   updates count of the data size in arrray
-         *          in the case it is manipulated from outside
-         *
-         * @param   -
-         *
-         * @return  correctly updated count of the data size in arrray
-         */
-//        uint16_t    update_count( uint16_t newcount );
-
-        /**
-         * @brief   returns flag indicating that bufer is empty
-         *
-         * @param   -
-         *
-         * @return  buffer is empty flag
-         */
-        bool isEmpty( void ) const;
-
-        /**
-         * @brief   returns flag indicating that bufer is full
-         *
-         * @param   -
-         *
-         * @return  buffer is full flag
-         */
-        bool isFull( void ) const;
-
-        /**
-         * @brief   returns oldest byte, advances tail
-         *
-         * @param   -
-         *
-         * @return  byte at tail
-         */
-        uint8_t     get( void );
-
-        /**
-         * @brief   return byte at index
-         *
-         * @param   index  array index
-         *
-         * @return  byte at position index
-         */
-        uint8_t     at( uint16_t index ) const;
-
-        /**
-         * @brief   return byte at index
-         *
-         * @param   index  array index
-         *
-         * @return  byte at position index
-         */
-        uint8_t     at( int index ) const;
-
-        /**
-         * @brief   return byte at x*width+y
-         *
-         * @param   x       x
-         * @param   y       y
-         * @param   width   width
-         * @param   height  height
-         *
-         * @return  byte at position if the position is valid
-         */
-//        uint8_t     peek( int x, int y, int width, int height ) const;
-
-        /**
-         * @brief   store a byte and return 0 for valid x*width+y
-         *
-         * @param   x       x
-         * @param   y       y
-         * @param   width   width
-         * @param   height  height
-         *
-         * @return  0 if position was valid
-         */
-//        uint8_t     poke( uint8_t aByte, int x, int y, int width, int height );
-
-        /**
-         * @brief   incoming CircularBuffer with added abyte
-         *
-         * @param   byte  byte to put in buffer
-         *
-         * @return  byte count in buffer
-         */
-        CircularBuffer  put( uint8_t abyte );
-
-
+        CircularBuffer  put(    uint8_t abyte );
+        CircularBuffer  putU16( uint16_t aword );
+        CircularBuffer  putU32( uint32_t aqword );
         CircularBuffer  append( uint8_t abyte );
-//        CircularBuffer  append( int repeats, uint8_t abyte );
         CircularBuffer  append( const char* cstring );
 
+        uint8_t         at(     uint16_t index ) const;
+        uint8_t         at(     int index ) const;
+        uint8_t         get(    void );
+        uint16_t        getU16( void );
+        uint32_t        getU32( void );
 
-        /**
-         * @brief   returns mid
-         *
-         * @param   uint16_t index
-         *          int size
-         *
-         * @return  CircularBuffer
-         */
 //        CircularBuffer   mid( uint16_t index, int size ) const;
 
-        /**
-         * @brief   Removes n bytes from the end of the byte array.
-         *          If n is greater than ByteArray::size(), the result is an empty byte array.
-         *
-         * @param   n   bytes to remove rom the end
-         *
-         * @return  CircularBuffer
-         */
-        CircularBuffer   chop( int n );
+        CircularBuffer  chop(   int n );
 
-        /**
-         * @brief   prints the buffer ar chars
-         *
-         * @param   -
-         *
-         * @return  -
-         */
-        void        print( void ) const;
+        void            print(  void ) const;
 
     private:
-        //<! head
-        uint16_t _head;
-        //<! tail
-        uint16_t _tail;
+
+        uint16_t _head = 0;
+        uint16_t _tail = 0;
 
         inline void add( uint8_t item ) {
             ByteArray::data()[_head] = item;
@@ -301,6 +91,7 @@ class CircularBuffer : public ByteArray {
                 _head = _head - ByteArray::size();
             }
         }
+
 };
 
 #endif // _CircularBuffer_H_

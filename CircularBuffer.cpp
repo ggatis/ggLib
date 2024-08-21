@@ -196,96 +196,32 @@ CircularBuffer::isFull() const {
 
 
 /**
- * @brief   returns oldest byte, advances tail
+ * @brief   incoming CircularBuffer with added abyte
  *
- * @param   -
+ * @param   byte  byte to put in buffer
  *
- * @return  byte at tail
+ * @return  CircularBuffer
  */
-uint8_t
-CircularBuffer::get( void ) {
-    if ( isEmpty() ) {
-        //throw std::runtime_error("Buffer is empty");
-        return 0;
-    }
-    uint8_t item = ByteArray::data()[_tail];
-    //Move tail to next position
-    ++_tail;
-    if ( _tail >= ByteArray::size() ) {
-        _tail = _tail - ByteArray::size();
-    }
-    update_count( ByteArray::count() - 1 );
-    return item;
+CircularBuffer
+CircularBuffer::put( uint8_t abyte ) {
+    add( abyte );
+    return *this;
 }
 
 
 /**
- * @brief   return byte at index, does not change the object
+ * @brief   incoming CircularBuffer with added abyte
  *
- * @param   index  array index
+ * @param   aword   word to put in buffer
  *
- * @return  byte at position index
+ * @return  CircularBuffer
  */
-uint8_t
-CircularBuffer::at( uint16_t index ) const {
-    if ( index >= ByteArray::count() ) {
-        //throw std::out_of_range("Index out of range");
-        return 0;
-    }
-    uint16_t pos = _tail + index;
-    if ( pos > ByteArray::size() ) {
-        pos -= ByteArray::size(); 
-    };
-    return ByteArray::data()[pos];
+CircularBuffer
+CircularBuffer::putU16( uint16_t aword ) {
+    add( (uint8_t)aword );
+    add( (uint8_t)( aword >> 8 ) );
+    return *this;
 }
-
-
-/**
- * @brief   return byte at index that wraps around ByteArray::size() from _tail
- *
- * @param   index  array index
- *
- * @return  byte at position index
- */
-uint8_t
-CircularBuffer::at( int index ) const {
-    //if ( index >= ByteArray::count() ) {
-    //    //throw std::out_of_range("Index out of range");
-    //    return 0;
-    //}
-    int pos = _tail + index;
-    while ( pos < 0 ) {
-        pos += ByteArray::size();
-    }
-    while ( pos >= ByteArray::size() ) {
-        pos -= ByteArray::size();
-    }
-    return ByteArray::data()[pos];
-}
-
-        /**
-         * @brief   return byte at x*width+y
-         *
-         * @param   x       x
-         * @param   y       y
-         * @param   width   width
-         * @param   height  height
-         *
-         * @return  byte at position if the position is valid
-         */
-//        uint8_t     peek( int x, int y, int width, int height ) const;
-
-        /**
-         * @brief   store a byte and return 0 for valid x*width+y
-         *
-         * @param   x       x
-         * @param   y       y
-         * @param   width   width
-         * @param   height  height
-         *
-         * @return  0 if position was valid
-         */
-//        uint8_t     poke( uint8_t aByte, int x, int y, int width, int height );
 
 
 /**
@@ -296,8 +232,13 @@ CircularBuffer::at( int index ) const {
  * @return  CircularBuffer
  */
 CircularBuffer
-CircularBuffer::put( uint8_t abyte ) {
-    add( abyte );
+CircularBuffer::putU32( uint32_t aqword ) {
+    add( (uint8_t)aqword );
+    aqword = aqword >> 8;
+    add( (uint8_t)aqword );
+    aqword = aqword >> 8;
+    add( (uint8_t)aqword );
+    add( (uint8_t)( aqword >> 8 ) );
     return *this;
 }
 
@@ -351,6 +292,166 @@ CircularBuffer::append( const char* cstring ) {
     return *this;
 
 }
+
+
+/**
+ * @brief   return byte at index, does not change the object
+ *
+ * @param   index  array index
+ *
+ * @return  byte at position index
+ */
+uint8_t
+CircularBuffer::at( uint16_t index ) const {
+    if ( index >= ByteArray::count() ) {
+        //throw std::out_of_range("Index out of range");
+        return 0;
+    }
+    uint16_t pos = _tail + index;
+    if ( pos > ByteArray::size() ) {
+        pos -= ByteArray::size(); 
+    };
+    return ByteArray::data()[pos];
+}
+
+
+/**
+ * @brief   return byte at index that wraps around ByteArray::size() from _tail
+ *
+ * @param   index  array index
+ *
+ * @return  byte at position index
+ */
+uint8_t
+CircularBuffer::at( int index ) const {
+    //if ( index >= ByteArray::count() ) {
+    //    //throw std::out_of_range("Index out of range");
+    //    return 0;
+    //}
+    int pos = _tail + index;
+    while ( pos < 0 ) {
+        pos += ByteArray::size();
+    }
+    while ( pos >= ByteArray::size() ) {
+        pos -= ByteArray::size();
+    }
+    return ByteArray::data()[pos];
+}
+
+
+/**
+ * @brief   returns oldest byte, advances tail
+ *
+ * @param   -
+ *
+ * @return  byte at tail
+ */
+uint8_t
+CircularBuffer::get( void ) {
+    if ( isEmpty() ) {
+        //throw std::runtime_error("Buffer is empty");
+        return 0;
+    }
+    uint8_t item = ByteArray::data()[_tail];
+    //Move tail to next position
+    ++_tail;
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
+    }
+    update_count( ByteArray::count() - 1 );
+    return item;
+}
+
+
+/**
+ * @brief   returns oldest word, advances tail
+ *
+ * @param   -
+ *
+ * @return  word at tail
+ */
+uint16_t
+CircularBuffer::getU16( void ) {
+    if ( 2 > ByteArray::count() ) {
+        //throw std::runtime_error("Buffer is empty");
+        return 0;
+    }
+    uint16_t item = (uint16_t)( ByteArray::data()[_tail] ) & 0x00FF;
+    ++_tail;
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
+    }
+    item = item | (uint16_t)( ByteArray::data()[_tail] ) & 0xFF00;
+    ++_tail;
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
+    }
+    ByteArray::update_count( ByteArray::count() - 2 );
+    return item;
+}
+
+
+/**
+ * @brief   returns oldest byte, advances tail
+ *
+ * @param   -
+ *
+ * @return  byte at tail
+ */
+uint32_t
+CircularBuffer::getU32( void ) {
+    if ( 4 > ByteArray::count() ) {
+        //throw std::runtime_error("Buffer is empty");
+        return 0;
+    }
+    uint32_t item = (uint32_t)( ByteArray::data()[_tail] ) & 0x000000FF;
+    ++_tail;
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
+    }
+    item = item | (uint32_t)( ByteArray::data()[_tail] ) & 0x0000FF00;
+    ++_tail;
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
+    }
+    item = item | (uint32_t)( ByteArray::data()[_tail] ) & 0x00FF0000;
+    ++_tail;
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
+    }
+    item = item | (uint32_t)( ByteArray::data()[_tail] ) & 0xFF000000;
+    ++_tail;
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
+    }
+    ByteArray::update_count( ByteArray::count() - 4 );
+    return item;
+}
+
+
+        /**
+         * @brief   return byte at x*width+y
+         *
+         * @param   x       x
+         * @param   y       y
+         * @param   width   width
+         * @param   height  height
+         *
+         * @return  byte at position if the position is valid
+         */
+//        uint8_t     peek( int x, int y, int width, int height ) const;
+
+        /**
+         * @brief   store a byte and return 0 for valid x*width+y
+         *
+         * @param   x       x
+         * @param   y       y
+         * @param   width   width
+         * @param   height  height
+         *
+         * @return  0 if position was valid
+         */
+//        uint8_t     poke( uint8_t aByte, int x, int y, int width, int height );
 
 
         /**
