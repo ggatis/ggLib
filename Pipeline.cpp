@@ -470,11 +470,14 @@ StatusCode Pipeline::processAll() {
         }
 #endif
         switch ( status ) {
-        case StatusCode::OK:
+        case StatusCode::OK:        //next iteration immediately
             break;
     
-        case StatusCode::PENDING:
-        case StatusCode::PARTIAL:
+        case StatusCode::PENDING:   //finish time quant, set stalled Pipe, restart pipeline
+            _faultyPipe = i + 1;    //Count pipes from 1
+            return status;
+
+        case StatusCode::PARTIAL:   //?? use cases ??
         case StatusCode::ERROR:
             _faultyPipe = i + 1;    //Count pipes from 1
             if ( _ErrorHandler ) {
