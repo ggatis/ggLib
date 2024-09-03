@@ -220,6 +220,30 @@ Dictionary::appendU32( uint32_t n, bool Continue ) {
   * @return  byte count in array
   */
 uint16_t
+Dictionary::appendHEX( const uint8_t* aHEX, uint16_t n, bool Continue ) {
+
+    uint16_t total = 0;
+    bool localContinue = Continue;
+
+    for ( uint16_t i = 0; i < n; ++i ) {
+        snprintf( snBuffer, sizeof( snBuffer ), "%02X", aHEX[i] );
+        total += append( (const char*)snBuffer, localContinue );
+        localContinue = true;
+    }
+
+    return total;
+
+}
+
+
+/**
+  * @brief   returns byte count in array
+  *
+  * @param   byte  byte to append
+  *
+  * @return  byte count in array
+  */
+uint16_t
 Dictionary::append( const char* akey, char* data ) {
     _keys++;
 /*    uint8_t*    plimit  = _ByteArray.data() + _ByteArray.size();

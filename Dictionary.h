@@ -129,6 +129,15 @@ class Dictionary {
          *
          * @return  byte count in array
          */
+        uint16_t    appendHEX( const uint8_t* aHEX, uint16_t n, bool Continue = true );
+
+        /**
+         * @brief   returns byte count in array
+         *
+         * @param   key and data to append
+         *
+         * @return  byte count in array
+         */
         uint16_t    append( const char* akey, char* data );
 
         /**
