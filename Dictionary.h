@@ -96,7 +96,7 @@ class Dictionary {
         uint16_t    sizeof_data( uint16_t n ) const;
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -105,7 +105,16 @@ class Dictionary {
         uint16_t    append( const char* data, bool Continue = true );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
+         *
+         * @param   key and data to append
+         *
+         * @return  byte count in array
+         */
+        uint16_t    append( const uint8_t* data, int size, bool Continue = true );
+
+        /**
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -114,7 +123,7 @@ class Dictionary {
         uint16_t    appendU8( uint8_t n, bool Continue = true );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -123,7 +132,7 @@ class Dictionary {
         uint16_t    appendU32( uint32_t n, bool Continue = true );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -132,7 +141,7 @@ class Dictionary {
         uint16_t    appendHEX( const uint8_t* aHEX, uint16_t n, bool Continue = true );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -141,7 +150,7 @@ class Dictionary {
         uint16_t    append( const char* akey, char* data );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -150,7 +159,7 @@ class Dictionary {
         uint16_t    append( const char* akey, const char* data );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -159,7 +168,7 @@ class Dictionary {
         uint16_t    append( const char* akey, const uint8_t* data );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -168,7 +177,7 @@ class Dictionary {
         uint16_t    append( const char* akey, const uint8_t* data, int size );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -177,7 +186,7 @@ class Dictionary {
         uint16_t    append( const char* akey, uint8_t n );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -186,7 +195,7 @@ class Dictionary {
         uint16_t    append( const char* akey, uint32_t n );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -195,7 +204,7 @@ class Dictionary {
         uint16_t    append( const char* akey, std::string& aString );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
@@ -204,7 +213,7 @@ class Dictionary {
         uint16_t    append( const char* akey, std::string&& aString );
 
         /**
-         * @brief   returns byte count in array
+         * @brief   returns the byte count appended to the array
          *
          * @param   key and data to append
          *
