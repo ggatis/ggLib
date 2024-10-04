@@ -73,16 +73,18 @@ public:
     StatusCode processStep( uint8_t i );
     StatusCode processAll( void );
 
-    uint8_t getFaultyPipe( void ) const;
-    uint8_t getPipeOffset( void ) const;
-    uint8_t getBufferCount( void ) const;
-    uint8_t getPipeCount( void ) const;
+    uint16_t   getDefaultBufferSize() const;
 
-    void swapIO( void );                                    //swap F-end and B-end (_buffers)
-    void swapIO( uint8_t PipeIndex );                       //swap buffers of pipe
-    void swapBuffers( uint16_t x, uint16_t y );             //swap buffers in _buffers
+    uint8_t    getFaultyPipe( void ) const;
+    uint8_t    getPipeOffset( void ) const;
+    uint8_t    getBufferCount( void ) const;
+    uint8_t    getPipeCount( void ) const;
 
-    void setErrorHandler( void (*ErrorHandler)( Pipeline* pPipeline, StatusCode ErrorCode ) );
+    void       swapIO( void );                              //swap F-end and B-end (_buffers)
+    void       swapIO( uint8_t PipeIndex );                 //swap buffers of pipe
+    void       swapBuffers( uint16_t x, uint16_t y );       //swap buffers in _buffers
+
+    void       setErrorHandler( void (*ErrorHandler)( Pipeline* pPipeline, StatusCode ErrorCode ) );
 
 private:
 

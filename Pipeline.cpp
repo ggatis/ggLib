@@ -28,9 +28,11 @@ Pipeline::Pipeline( uint16_t buffersize ) :
 
 //Constructor with a provided ByteArray input buffer
 Pipeline::Pipeline( ByteArray* pBAin ) :
-    _defaultBufferSize( pBAin->size() ) {
+    _defaultBufferSize( pBAin ? pBAin->size() : 0 ) {
     //do not create the first buffer
-    _buffers.push_back( pBAin );
+    //save if it is not empty
+    if ( pBAin ) 
+        _buffers.push_back( pBAin );
 }
 
 
@@ -513,6 +515,10 @@ StatusCode Pipeline::processAll() {
 }
 
 /* Other utility functions */
+
+uint16_t Pipeline::getDefaultBufferSize() const {
+    return _defaultBufferSize;
+}
 
 uint8_t Pipeline::getFaultyPipe() const {
     return _faultyPipe;
