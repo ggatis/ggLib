@@ -426,9 +426,9 @@ StatusCode Pipeline::processStep( uint8_t i ) {
         StatusCode status = _pipes[i-1]->process();
         if ( status != StatusCode::OK ) {
             _faultyPipe = i;        //Count pipes from 1
-        }
-        if ( _ErrorHandler ) {
-            _ErrorHandler( this, status );
+            if ( _ErrorHandler ) {
+                _ErrorHandler( this, status );
+            }
         }
         return status;
     }
