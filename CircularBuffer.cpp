@@ -308,7 +308,7 @@ CircularBuffer::at( uint16_t index ) const {
         return 0;
     }
     uint16_t pos = _tail + index;
-    if ( pos > ByteArray::size() ) {
+    if ( pos >= ByteArray::size() ) {
         pos -= ByteArray::size(); 
     };
     return ByteArray::data()[pos];
