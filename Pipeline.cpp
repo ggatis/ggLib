@@ -424,7 +424,7 @@ StatusCode Pipeline::processStep( uint8_t i ) {
     if ( i > 0 && i <= _pipes.size() ) {
         _faultyPipe = 0;            //Reset the faulty pipe indicator
         StatusCode status = _pipes[i-1]->process();
-        if ( status != StatusCode::OK ) {
+        if ( ( status != StatusCode::NEXT ) && ( status != StatusCode::OK ) ) {
             _faultyPipe = i;        //Count pipes from 1
             if ( _ErrorHandler ) {
                 _ErrorHandler( this, status );
@@ -472,16 +472,22 @@ StatusCode Pipeline::processAll() {
         }
 #endif
         switch ( status ) {
-        case StatusCode::OK:        //next iteration immediately
+        case StatusCode::NEXT:          //next iteration immediately
             break;
-    
-        case StatusCode::PENDING:   //finish time quant, set stalled Pipe, restart pipeline
-            _faultyPipe = i + 1;    //Count pipes from 1
+
+        case StatusCode::OK:            //finish time quant, continue later with next
+            _pipeOffset = i + 1;        //first pipe offset
+            //terminate = 1;
+            return status;
+            //break;
+        
+        case StatusCode::PENDING:       //finish time quant, set stalled Pipe, restart pipeline
+            _faultyPipe = i + 1;        //Count pipes from 1
             return status;
 
-        case StatusCode::PARTIAL:   //?? use cases ??
+        case StatusCode::PARTIAL:       //?? use cases ??
         case StatusCode::ERROR:
-            _faultyPipe = i + 1;    //Count pipes from 1
+            _faultyPipe = i + 1;        //Count pipes from 1
             if ( _ErrorHandler ) {
                 _ErrorHandler( this, status );
             }
@@ -495,12 +501,6 @@ StatusCode Pipeline::processAll() {
             return status;
             //break;
 
-        case StatusCode::NEXT:      //finish time quant, continue later with next
-            _pipeOffset = i + 1;    //first pipe offset
-            //terminate = 1;
-            return status;
-            //break;
-    
         default:
             // Handle unexpected status
             _faultyPipe = i + 1;    //Count pipes from 1
